@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ardiansyah siswa</title>
+<style>
+:root{--blue:#2563eb;--dark:#1e293b;--muted:#64748b;--line:#e2e8f0}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#f1f5f9;color:var(--dark);min-height:100vh}
+button,input,select{font:inherit}
+button{border:0;cursor:pointer}
+.hidden{display:none!important}
+.container{max-width:1100px;margin:auto;padding:20px}
+header{background:var(--blue);color:white;padding:22px;border-radius:12px;margin-bottom:20px}
+header h1{margin-bottom:7px}
+header p{font-size:14px;margin-top:5px}
+.panel,.stat,.login-card{background:white;padding:22px;border-radius:12px;box-shadow:0 2px 8px #0000000d}
+.panel{margin-bottom:20px}
+.panel h2{margin-bottom:18px;font-size:20px}
+.login-wrap{max-width:420px;margin:65px auto;padding:15px}
+.login-card{padding:28px}
+.login-card h1{color:var(--blue);margin-bottom:8px}
+.sub{color:var(--muted);margin-bottom:20px;font-size:14px}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:14px;font-weight:bold;margin-bottom:7px}
+.field input,.field select{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:7px;background:white;outline:none}
+.field input:focus,.field select:focus{border-color:var(--blue)}
+.btn{padding:11px 15px;border-radius:7px;color:white;font-weight:bold;margin:3px 2px}
+.primary{background:var(--blue)}.secondary{background:#64748b}.danger{background:#dc2626}.warning{background:#d97706}
+.block{width:100%}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:20px}
+.stat{font-size:14px;color:var(--muted)}
+.stat strong{display:block;color:var(--blue);font-size:28px;margin-top:9px}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.full{grid-column:1/-1}
+.notice{background:#eff6ff;color:#1e40af;padding:12px;border-radius:7px;font-size:13px;margin-bottom:15px;line-height:1.5}
+.error{background:#fee2e2;color:#991b1b;padding:12px;border-radius:7px;margin-bottom:15px;font-size:13px}
+.success{background:#dcfce7;color:#166534;padding:12px;border-radius:7px;margin-bottom:15px;font-size:13px}
+.search{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:7px;margin-bottom:15px}
+.table-wrap{overflow-x:auto}
+table{width:100%;min-width:760px;border-collapse:collapse}
+th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);font-size:13px}
+th{background:#eff6ff;color:#1d4ed8}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#dcfce7;color:#166534;font-size:12px}
+.profile p{padding:10px 0;border-bottom:1px solid var(--line);line-height:1.4}
+.profile b{display:inline-block;width:125px}
+footer{text-align:center;color:var(--muted);padding:20px;font-size:13px}
+@media(max-width:600px){.container{padding:10px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.cards{grid-template-columns:1fr 1fr}.panel{padding:15px}.login-wrap{margin:30px auto}}
+</style>
+</head>
+<body>
+
+<section id="loginPage" class="login-wrap">
+  <div class="login-card">
+    <h1>🎓 Ardiansyah siswa</h1>
+    <p class="sub">Sistem Informasi Data Siswa</p>
+    <div id="loginMessage"></div>
+    <form id="loginForm">
+      <div class="field">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" autocomplete="username" placeholder="Masukkan email" required>
+      </div>
+      <div class="field">
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Masukkan password" required>
+      </div>
+      <button class="btn primary block" id="loginButton" type="submit">Login</button>
+    </form>
+    <p class="sub" style="margin:18px 0 0">Belum punya akun? Hubungi administrator sekolah.</p>
+  </div>
+</section>
+
+<main id="dashboard" class="container hidden">
+  <header>
+    <h1>🎓 Ardiansyah siswa</h1>
+    <p>Manajemen Data Siswa Online</p>
+    <p id="welcomeUser"></p>
+    <button id="logoutButton" class="btn danger" style="margin-top:12px">Logout</button>
+  </header>
+
+  <section id="adminPage" class="hidden">
+    <div class="cards">
+      <div class="stat">Total siswa<strong id="totalSiswa">0</strong></div>
+      <div class="stat">Total kelas<strong id="totalKelas">0</strong></div>
+    </div>
+
+    <div class="panel">
+      <h2 id="formTitle">Tambah Siswa</h2>
+      <div class="notice">
+        Buat akun login siswa dengan email dan password sementara. Berikan password kepada siswa secara pribadi. Password tidak disimpan di database.
+      </div>
+      <div id="formMessage"></div>
+      <form id="studentForm">
+        <div class="form-grid">
+          <div class="field"><label for="nis">NIS</label><input id="nis" required></div>
+          <div class="field"><label for="nama">Nama lengkap</label><input id="nama" required></div>
+          <div class="field"><label for="kelas">Kelas</label><input id="kelas" placeholder="Contoh: XII TKJ 3" required></div>
+          <div class="field">
+            <label for="jurusan">Jurusan</label>
+            <select id="jurusan" required>
+              <option value="">Pilih jurusan</option><option>TKJ</option><option>RPL</option><option>DKV</option><option>Multimedia</option><option>Lainnya</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="jk">Jenis kelamin</label>
+            <select id="jk" required><option value="">Pilih</option><option>Laki-laki</option><option>Perempuan</option></select>
+          </div>
+          <div class="field"><label for="hp">Nomor HP (opsional)</label><input id="hp" type="tel"></div>
+          <div class="field"><label for="studentEmail">Email login siswa</label><input id="studentEmail" type="email" placeholder="siswa@email.com" required></div>
+          <div class="field" id="passwordField"><label for="studentPassword">Password awal</label><input id="studentPassword" type="password" minlength="6" placeholder="Minimal 6 karakter" required></div>
+          <div class="full">
+            <button class="btn primary" id="saveStudentButton" type="submit">+ Simpan Siswa</button>
+            <button class="btn secondary" id="cancelEditButton" type="button">Reset</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Daftar Data Siswa</h2>
+      <input id="searchStudent" class="search" placeholder="Cari nama, NIS, kelas, jurusan, atau email...">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>No.</th><th>NIS</th><th>Nama</th><th>Kelas</th><th>Jurusan</th><th>Email</th><th>Aksi</th></tr></thead>
+          <tbody id="studentTable"><tr><td colspan="7">Memuat data...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="studentPage" class="hidden">
+    <div class="panel">
+      <h2>Profil Saya</h2>
+      <div id="myProfile" class="profile">Memuat profil...</div>
+    </div>
+    <div class="panel">
+      <h2>Informasi Akun</h2>
+      <p class="notice">Kamu login sebagai siswa. Data yang ditampilkan hanya profil milik akunmu. Untuk perubahan data, hubungi admin.</p>
+      <p id="studentAccountEmail"></p>
+    </div>
+  </section>
+  <footer>© 2026 Ardiansyah siswa</footer>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+  signOut, createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc,
+  collection, getDocs, query, where
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+/* GANTI ISI KONFIGURASI INI DENGAN CONFIG FIREBASE MILIKMU */
+const firebaseConfig = {
+  apiKey: "ISI_API_KEY",
+  authDomain: "ISI_PROJECT_ID.firebaseapp.com",
+  projectId: "ISI_PROJECT_ID",
+  storageBucket: "ISI_PROJECT_ID.firebasestorage.app",
+  messagingSenderId: "ISI_MESSAGING_SENDER_ID",
+  appId: "ISI_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Auth kedua khusus membuat akun siswa tanpa mengeluarkan admin.
+const secondaryApp = initializeApp(firebaseConfig, "Secondary");
+const secondaryAuth = getAuth(secondaryApp);
+
+const $ = id => document.getElementById(id);
+let currentUser = null;
+let currentProfile = null;
+let students = [];
+let editingUid = null;
+
+function showMessage(id, message, type = "error") {
+  $(id).innerHTML = `<div class="${type}">${escapeHTML(message)}</div>`;
+}
+function clearMessage(id) { $(id).innerHTML = ""; }
+
+function escapeHTML(value = "") {
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  })[c]);
+}
+
+function showLogin() {
+  $("loginPage").classList.remove("hidden");
+  $("dashboard").classList.add("hidden");
+}
+function showDashboard() {
+  $("loginPage").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+}
+
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  clearMessage("loginMessage");
+  $("loginButton").disabled = true;
+  $("loginButton").textContent = "Memproses...";
+  try {
+    await signInWithEmailAndPassword(
+      auth, $("loginEmail").value.trim(), $("loginPassword").value
+    );
+  } catch (err) {
+    showMessage("loginMessage", friendlyError(err));
+  } finally {
+    $("loginButton").disabled = false;
+    $("loginButton").textContent = "Login";
+  }
+});
+
+onAuthStateChanged(auth, async user => {
+  currentUser = user;
+  if (!user) {
+    currentProfile = null;
+    showLogin();
+    return;
+  }
+
+  try {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists()) {
+      await signOut(auth);
+      showMessage("loginMessage", "Akun belum terdaftar sebagai admin atau siswa. Hubungi administrator.");
+      return;
+    }
+
+    currentProfile = snap.data();
+    showDashboard();
+    $("welcomeUser").textContent =
+      `Halo, ${currentProfile.nama || user.email} • ${currentProfile.role}`;
+
+    if (currentProfile.role === "admin") {
+      $("adminPage").classList.remove("hidden");
+      $("studentPage").classList.add("hidden");
+      await loadStudents();
+    } else if (currentProfile.role === "siswa") {
+      $("studentPage").classList.remove("hidden");
+      $("adminPage").classList.add("hidden");
+      renderMyProfile();
+    } else {
+      await signOut(auth);
+      showMessage("loginMessage", "Peran akun tidak dikenali.");
+    }
+  } catch (err) {
+    console.error(err);
+    await signOut(auth);
+    showMessage("loginMessage", "Tidak dapat memuat profil. Periksa konfigurasi dan Security Rules Firebase.");
+  }
+});
+
+$("logoutButton").addEventListener("click", async () => {
+  await signOut(auth);
+});
+
+function renderMyProfile() {
+  const p = currentProfile;
+  $("myProfile").innerHTML = `
+    <p><b>NIS</b> ${escapeHTML(p.nis)}</p>
+    <p><b>Nama</b> ${escapeHTML(p.nama)}</p>
+    <p><b>Kelas</b> ${escapeHTML(p.kelas)}</p>
+    <p><b>Jurusan</b> ${escapeHTML(p.jurusan)}</p>
+    <p><b>Jenis kelamin</b> ${escapeHTML(p.jk)}</p>
+    <p><b>Nomor HP</b> ${escapeHTML(p.hp || "-")}</p>
+  `;
+  $("studentAccountEmail").textContent = "Email akun: " + currentUser.email;
+}
+
+async function loadStudents() {
+  $("studentTable").innerHTML = '<tr><td colspan="7">Memuat data...</td></tr>';
+  try {
+    const q = query(collection(db, "users"), where("role", "==", "siswa"));
+    const result = await getDocs(q);
+    students = result.docs.map(d => ({ uid: d.id, ...d.data() }));
+    students.sort((a,b) => (a.nama || "").localeCompare(b.nama || ""));
+    renderStudents();
+  } catch (err) {
+    $("studentTable").innerHTML = '<tr><td colspan="7">Gagal memuat data. Periksa Firestore Security Rules.</td></tr>';
+    console.error(err);
+  }
+}
+
+function renderStudents() {
+  const keyword = $("searchStudent").value.toLowerCase().trim();
+  const filtered = students.filter(s =>
+    [s.nis,s.nama,s.kelas,s.jurusan,s.email]
+      .some(v => String(v || "").toLowerCase().includes(keyword))
+  );
+
+  $("totalSiswa").textContent = students.length;
+  $("totalKelas").textContent = new Set(students.map(s => (s.kelas || "").toLowerCase())).size;
+
+  if (!filtered.length) {
+    $("studentTable").innerHTML = '<tr><td colspan="7">Data siswa tidak ditemukan.</td></tr>';
+    return;
+  }
+
+  $("studentTable").innerHTML = filtered.map((s,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${escapeHTML(s.nis)}</td>
+      <td>${escapeHTML(s.nama)}</td>
+      <td>${escapeHTML(s.kelas)}</td>
+      <td>${escapeHTML(s.jurusan)}</td>
+      <td>${escapeHTML(s.email)}</td>
+      <td>
+        <button class="btn warning" data-edit="${s.uid}">Edit</button>
+        <button class="btn danger" data-delete="${s.uid}">Hapus</button>
+      </td>
+    </tr>
+  `).join("");
+
+  $("studentTable").querySelectorAll("[data-edit]").forEach(btn =>
+    btn.addEventListener("click", () => editStudent(btn.dataset.edit))
+  );
+  $("studentTable").querySelectorAll("[data-delete]").forEach(btn =>
+    btn.addEventListener("click", () => removeStudent(btn.dataset.delete))
+  );
+}
+
+$("searchStudent").addEventListener("input", renderStudents);
+
+function resetStudentForm() {
+  $("studentForm").reset();
+  editingUid = null;
+  $("formTitle").textContent = "Tambah Siswa";
+  $("saveStudentButton").textContent = "+ Simpan Siswa";
+  $("passwordField").classList.remove("hidden");
+  $("studentPassword").required = true;
+  $("studentEmail").disabled = false;
+  clearMessage("formMessage");
+}
+$("cancelEditButton").addEventListener("click", resetStudentForm);
+
+function editStudent(uid) {
+  const s = students.find(x => x.uid === uid);
+  if (!s) return;
+  editingUid = uid;
+  $("nis").value = s.nis || "";
+  $("nama").value = s.nama || "";
+  $("kelas").value = s.kelas || "";
+  $("jurusan").value = s.jurusan || "";
+  $("jk").value = s.jk || "";
+  $("hp").value = s.hp || "";
+  $("studentEmail").value = s.email || "";
+  $("studentEmail").disabled = true;
+  $("passwordField").classList.add("hidden");
+  $("studentPassword").required = false;
+  $("formTitle").textContent = "Edit Data Siswa";
+  $("saveStudentButton").textContent = "Update Data";
+  clearMessage("formMessage");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+$("studentForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  clearMessage("formMessage");
+  $("saveStudentButton").disabled = true;
+
+  const data = {
+    nis: $("nis").value.trim(),
+    nama: $("nama").value.trim(),
+    kelas: $("kelas").value.trim(),
+    jurusan: $("jurusan").value,
+    jk: $("jk").value,
+    hp: $("hp").value.trim()
+  };
+
+  try {
+    if (editingUid) {
+      await updateDoc(doc(db, "users", editingUid), data);
+      showMessage("formMessage", "Data siswa berhasil diperbarui.", "success");
+    } else {
+      const email = $("studentEmail").value.trim();
+      const password = $("studentPassword").value;
+
+      if (password.length < 6) throw new Error("Password minimal 6 karakter.");
+
+      if (students.some(s => s.nis?.toLowerCase() === data.nis.toLowerCase())) {
+        throw new Error("NIS tersebut sudah terdaftar.");
+      }
+
+      // Buat akun melalui Firebase Auth kedua agar sesi admin tetap aktif.
+      const credential = await createUserWithEmailAndPassword(
+        secondaryAuth, email, password
+      );
+
+      try {
+        await setDoc(doc(db, "users", credential.user.uid), {
+          ...data,
+          email,
+          role: "siswa",
+          createdAt: new Date().toISOString()
+        });
+      } catch (writeError) {
+        // Hapus akun sekunder jika penyimpanan profil gagal.
+        await credential.user.delete();
+        throw writeError;
+      }
+
+      await signOut(secondaryAuth);
+      showMessage("formMessage", "Akun dan data siswa berhasil dibuat. Berikan email dan password awal kepada siswa.", "success");
+    }
+
+    resetStudentForm();
+    await loadStudents();
+  } catch (err) {
+    console.error(err);
+    showMessage("formMessage", friendlyError(err));
+    if (secondaryAuth.currentUser) await signOut(secondaryAuth).catch(()=>{});
+  } finally {
+    $("saveStudentButton").disabled = false;
+  }
+});
+
+async function removeStudent(uid) {
+  const s = students.find(x => x.uid === uid);
+  if (!s) return;
+  if (!confirm(`Hapus data profil ${s.nama}? Akun Auth Firebase tidak ikut terhapus oleh halaman ini.`)) return;
+
+  try {
+    await deleteDoc(doc(db, "users", uid));
+    await loadStudents();
+    showMessage("formMessage", "Profil siswa dihapus. Untuk menghapus akun login sepenuhnya, hapus juga akun tersebut melalui Firebase Authentication atau Cloud Function admin.", "success");
+  } catch (err) {
+    showMessage("formMessage", friendlyError(err));
+  }
+}
+
+function friendlyError(err) {
+  const messages = {
+    "auth/invalid-credential":"Email atau password salah.",
+    "auth/user-not-found":"Akun tidak ditemukan.",
+    "auth/wrong-password":"Password salah.",
+    "auth/email-already-in-use":"Email sudah digunakan.",
+    "auth/weak-password":"Password terlalu lemah. Gunakan minimal 6 karakter.",
+    "auth/invalid-email":"Format email tidak valid.",
+    "auth/too-many-requests":"Terlalu banyak percobaan. Coba lagi nanti.",
+    "permission-denied":"Akses ditolak. Periksa Firestore Security Rules.",
+    "unavailable":"Koneksi internet bermasalah. Coba lagi."
+  };
+  return messages[err.code] || err.message || "Terjadi kesalahan.";
+}
+</script>
+</body>
+</html>
